@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="002-create-broker-accounts-table" author="eshevchenko">
+    <createTable tableName="broker_accounts" schemaName="api">
+      <column name="id" type="BIGINT" autoIncrement="true">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="client_id" type="BIGINT">
+        <constraints nullable="false"
+          foreignKeyName="fk_broker_accounts_client"
+          references="api.clients(id)"/>
+      </column>
+      <column name="account_number" type="VARCHAR(30)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="currency" type="VARCHAR(3)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="type" type="VARCHAR(20)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="status" type="VARCHAR(20)" defaultValue="OPEN">
+        <constraints nullable="false"/>
+      </column>
+      <column name="opened_at" type="TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+      <column name="closed_at" type="TIMESTAMP"/>
+    </createTable>
+
+    <setTableRemarks tableName="broker_accounts" schemaName="api" remarks="Брокерские счета клиентов"/>
+
+    <setColumnRemarks tableName="broker_accounts" schemaName="api" columnName="account_number" remarks="Номер брокерского счёта (уникальный)"/>
+    <setColumnRemarks tableName="broker_accounts" schemaName="api" columnName="client_id" remarks="Ссылка на клиента"/>
+
+    <createIndex indexName="idx_broker_accounts_client_id" tableName="broker_accounts" schemaName="api">
+      <column name="client_id"/>
+    </createIndex>
+    <createIndex indexName="idx_broker_accounts_account_number" tableName="broker_accounts" schemaName="api">
+      <column name="account_number"/>
+    </createIndex>
+
+    <rollback>
+      <dropTable tableName="broker_accounts" schemaName="api"/>
+    </rollback>
+  </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="003-migrate-client-account-id-to-uuid" author="eshevchenko">
+    <comment>
+      Меняем тип id клиента и счета с BIGINT на UUID.
+      Dev-миграция: таблицы пересоздаются, текущие данные теряются.
+    </comment>
+
+    <dropTable schemaName="api" tableName="broker_accounts" cascadeConstraints="true"/>
+    <dropTable schemaName="api" tableName="clients" cascadeConstraints="true"/>
+
+    <createTable schemaName="api" tableName="clients">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="first_name" type="VARCHAR(100)"/>
+      <column name="last_name" type="VARCHAR(100)"/>
+      <column name="middle_name" type="VARCHAR(100)"/>
+      <column name="birth_date" type="DATE"/>
+      <column name="email" type="VARCHAR(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="phone" type="VARCHAR(30)"/>
+      <column name="inn" type="VARCHAR(20)">
+        <constraints unique="true"/>
+      </column>
+      <column name="series" type="VARCHAR(10)"/>
+      <column name="number" type="VARCHAR(10)"/>
+      <column name="status" type="VARCHAR(30)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="block_reason" type="VARCHAR(255)"/>
+      <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+      <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+
+    <createTable schemaName="api" tableName="broker_accounts">
+      <column name="id" type="UUID">
+        <constraints primaryKey="true" nullable="false"/>
+      </column>
+      <column name="client_id" type="UUID">
+        <constraints nullable="false"/>
+      </column>
+      <column name="account_number" type="VARCHAR(50)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="currency" type="VARCHAR(10)"/>
+      <column name="type" type="VARCHAR(30)"/>
+      <column name="status" type="VARCHAR(30)"/>
+      <column name="opened_at" type="TIMESTAMP WITH TIME ZONE"/>
+      <column name="closed_at" type="TIMESTAMP WITH TIME ZONE"/>
+    </createTable>
+
+    <addForeignKeyConstraint
+      baseTableSchemaName="api"
+      baseTableName="broker_accounts"
+      baseColumnNames="client_id"
+      referencedTableSchemaName="api"
+      referencedTableName="clients"
+      referencedColumnNames="id"
+      constraintName="fk_broker_accounts_client_id"
+      onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

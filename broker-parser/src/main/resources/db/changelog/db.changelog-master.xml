@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <include file="db/changelog/changelogs/001__create_report_operations.xml"/>
+  <include file="db/changelog/changelogs/002-add-status-to-report-versions.xml"/>
+  <include file="db/changelog/changelogs/003-add-report-metadata-columns.xml"/>
+  <include file="db/changelog/changelogs/004-add-default-version-reports.xml"/>
+  <include file="db/changelog/changelogs/005-drop-not-null-version-reports.xml"/>
+
+</databaseChangeLog>

@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: broker-report-import
+
+  profiles:
+    active: dev
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+server:
+  port: 8081
+
+logging:
+  level:
+    root: INFO
+    dev.eshevchenko: DEBUG
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
