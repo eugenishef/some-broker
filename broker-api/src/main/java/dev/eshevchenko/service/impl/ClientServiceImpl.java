@@ -14,14 +14,12 @@ import dev.eshevchenko.dto.response.CreateClientResponse;
 import dev.eshevchenko.dto.response.PageResponse;
 import dev.eshevchenko.enums.ClientStatus;
 import dev.eshevchenko.enums.Status;
-import dev.eshevchenko.exceptions.InvalidClientIdException;
 import dev.eshevchenko.mapper.AccountMapper;
 import dev.eshevchenko.mapper.ClientMapper;
 import dev.eshevchenko.entity.Client;
 import dev.eshevchenko.service.ClientService;
-import jakarta.persistence.EntityNotFoundException;
+import dev.eshevchenko.utils.ClientUtils;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -40,6 +38,7 @@ public class ClientServiceImpl implements ClientService {
   private final AccountRepository accountRepository;
   private final ClientMapper clientMapper;
   private final AccountMapper accountMapper;
+  private final ClientUtils clientUtils;
 
   @Override
   @Transactional
@@ -59,7 +58,7 @@ public class ClientServiceImpl implements ClientService {
 
   @Override
   public ClientResponse getClient(String clientId) {
-    Client entity = getOrThrow(clientId);
+    Client entity = clientUtils.getOrThrow(clientId);
     List<AccountResponse> accounts =
       accountMapper.toResponse(accountRepository.findAllByClientId(entity.getId()));
     return clientMapper.toResponse(entity, accounts);
@@ -85,7 +84,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional
   public ClientResponse updateClient(String clientId, UpdateClientRequest request) {
-    Client entity = getOrThrow(clientId);
+    Client entity = clientUtils.getOrThrow(clientId);
     clientMapper.update(entity, request);
 
     Client saved = repository.save(entity);
@@ -98,7 +97,7 @@ public class ClientServiceImpl implements ClientService {
   @Transactional
   public ClientResponse patchClient(String clientId, PatchClientRequest request) {
 
-    Client entity = getOrThrow(clientId);
+    Client entity = clientUtils.getOrThrow(clientId);
     clientMapper.patch(entity, request);
 
     Client saved = repository.save(entity);
@@ -110,7 +109,7 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional
   public void blockClient(String clientId, BlockClientRequest request) {
-    Client entity = getOrThrow(clientId);
+    Client entity = clientUtils.getOrThrow(clientId);
     entity.setStatus(ClientStatus.BLOCKED);
     entity.setBlockReason(request.reason());
     repository.save(entity);
@@ -119,23 +118,9 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional
   public void unblockClient(String clientId) {
-    Client entity = getOrThrow(clientId);
+    Client entity = clientUtils.getOrThrow(clientId);
     entity.setStatus(ClientStatus.ACTIVE);
     entity.setBlockReason(null);
     repository.save(entity);
-  }
-
-  private Client getOrThrow(String clientId) {
-    UUID id = parseClientId(clientId);
-    return repository.findById(id)
-      .orElseThrow(() -> new EntityNotFoundException("Клиент не найден: " + clientId));
-  }
-
-  private UUID parseClientId(String clientId) {
-    try {
-      return UUID.fromString(clientId);
-    } catch (IllegalArgumentException ex) {
-      throw new InvalidClientIdException("Некорректный формат идентификатора клиента: " + clientId);
-    }
   }
 }

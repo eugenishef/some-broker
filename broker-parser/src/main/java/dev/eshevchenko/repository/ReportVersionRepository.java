@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReportVersionRepository extends JpaRepository<ReportVersionEntity, UUID> {
+
   List<ReportVersionEntity> findByReportIdOrderByVersionNumberDesc(UUID reportId);
+
   Optional<ReportVersionEntity> findByReportIdAndVersionNumber(UUID reportId, Integer versionNumber);
 }

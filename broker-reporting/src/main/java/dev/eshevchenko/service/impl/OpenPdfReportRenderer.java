@@ -20,10 +20,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import com.lowagie.text.Document;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 public class OpenPdfReportRenderer implements PdfRenderer {
 
   private static final DateTimeFormatter DATE_FORMAT =

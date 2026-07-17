@@ -3,13 +3,14 @@ package dev.eshevchenko.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(schema = "reporting", name = "report_versions")
@@ -23,8 +24,8 @@ public class ReportVersionEntity {
   private UUID reportId;
   private int versionNumber;
 
-  @Lob
-  @Column(columnDefinition = "BYTEA")
+  @JdbcTypeCode(SqlTypes.VARBINARY)
+  @Column(columnDefinition = "bytea")
   private byte[] content;
 
   private Instant createdAt;

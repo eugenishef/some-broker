@@ -2,6 +2,12 @@ spring:
   application:
     name: broker-report-import
 
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:broker}
+    username: ${DB_USERNAME:broker}
+    password: ${DB_PASSWORD:broker}
+    driver-class-name: org.postgresql.Driver
+
   profiles:
     active: dev
 
@@ -12,7 +18,12 @@ spring:
       max-request-size: 200MB
 
 server:
-  port: 8081
+  port: ${APP_PORT:8081}
+
+app:
+  report:
+    import:
+      batch-size: 1
 
 logging:
   level:

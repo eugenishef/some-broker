@@ -21,6 +21,7 @@ import dev.eshevchenko.repository.DisputeRepository;
 import dev.eshevchenko.repository.ReportRepository;
 import dev.eshevchenko.repository.ReportVersionRepository;
 import dev.eshevchenko.service.ReportService;
+import dev.eshevchenko.utils.ReportServiceUtils;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +49,7 @@ public class ReportServiceImpl implements ReportService {
   private final DisputeRepository disputeRepository;
   private final ReportMapper reportMapper;
   private final KafkaTemplate<String, Object> kafkaTemplate;
+  private final ReportServiceUtils reportServiceUtils;
 
   @Override
   @Transactional
@@ -94,7 +96,7 @@ public class ReportServiceImpl implements ReportService {
     MDC.put("operation", "getReport");
     try {
       log.info("Запрос отчета");
-      Report report = findReportOrThrow(id);
+      Report report = reportServiceUtils.findReportOrThrow(id);
       return reportMapper.toResponse(report);
     } finally {
       MDC.remove("reportId");
@@ -168,7 +170,7 @@ public class ReportServiceImpl implements ReportService {
     MDC.put("operation", "getPdf");
     try {
       log.info("Запрос PDF отчета");
-      Report report = findReportOrThrow(id);
+      Report report = reportServiceUtils.findReportOrThrow(id);
       return report.getContent();
     } finally {
       MDC.remove("reportId");
@@ -187,7 +189,7 @@ public class ReportServiceImpl implements ReportService {
     MDC.put("reportId", reportId.toString());
     MDC.put("operation", "supplementReport");
     try {
-      Report report = findReportOrThrow(reportId);
+      Report report = reportServiceUtils.findReportOrThrow(reportId);
 
       if (report.getVersion() != request.expectedVersion()) {
         log.warn("Конфликт версий: клиент ожидал {}, актуальная {}",
@@ -247,13 +249,5 @@ public class ReportServiceImpl implements ReportService {
       MDC.remove("reportId");
       MDC.remove("operation");
     }
-  }
-
-  private Report findReportOrThrow(UUID id) {
-    return reportRepository.findById(id)
-      .orElseThrow(() -> {
-        log.warn("Отчет не найден");
-        return new ReportNotFoundException("Отчет с id=" + id + " не найден");
-      });
   }
 }

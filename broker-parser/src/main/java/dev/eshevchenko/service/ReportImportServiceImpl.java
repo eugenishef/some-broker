@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,8 @@ public class ReportImportServiceImpl implements ReportImportService {
   private final ReportMapper mapper;
   private final KafkaTemplate<String,Object> kafkaTemplate;
 
-  private static final int BATCH_SIZE = 1;
+  @Value("${app.report.import.batch-size:1}")
+  private int batchSize;
 
   @Override
   @Transactional
@@ -68,7 +70,7 @@ public class ReportImportServiceImpl implements ReportImportService {
       operation.setReportId(reportId);
       batch.add(operation);
 
-      if (batch.size() == BATCH_SIZE) {
+      if (batch.size() == batchSize) {
         operationRepository.saveAll(batch);
         operationRepository.flush();
         batch.clear();

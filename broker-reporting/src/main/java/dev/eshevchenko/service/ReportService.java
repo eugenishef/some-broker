@@ -16,12 +16,20 @@ import org.springframework.data.domain.Page;
 public interface ReportService {
 
   CreateReportResponse createReport(CreateReportRequest request);
+
   Page<ReportResponse> searchReports(ReportSearchRequest request);
+
   ReportResponse getReport(UUID reportId);
+
   ReportResponse getOrCreateForPeriod(UUID clientId, LocalDate from, LocalDate to);
+
   List<ReportVersionResponse> getVersions(UUID reportId);
+
   ReportVersionResponse getVersion(UUID reportId, int versionNumber);
+
   byte[] getPdf(UUID reportId);
+
   ReportResponse supplementReport(UUID reportId, SupplementReportRequest request);
+
   DisputeResponse disputeOperations(UUID reportId, DisputeRequest request);
 }

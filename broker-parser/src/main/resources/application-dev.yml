@@ -1,12 +1,8 @@
-server:
-  port: 8081
-
 spring:
-
   datasource:
-    url: jdbc:postgresql://localhost:5432/broker_dev
-    username: broker
-    password: broker
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:broker_dev}
+    username: ${DB_USERNAME:broker}
+    password: ${DB_PASSWORD:broker}
     driver-class-name: org.postgresql.Driver
 
   jpa:

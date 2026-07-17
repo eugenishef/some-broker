@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
   info = @Info(
     title = "Broker API",
     version = "1.0",
-    description = "Сервис для управления клиентами и брокерскими счетами"
+    description = "Сервис для загрузки отчетов из внешних файлов"
   )
 )
 public class OpenApiConfig {

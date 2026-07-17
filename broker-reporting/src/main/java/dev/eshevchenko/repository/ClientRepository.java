@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface ClientRepository
   extends JpaRepository<ClientSummary, UUID> {
 
-
   @Query("""
         select
             c.id as id,

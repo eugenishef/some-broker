@@ -12,10 +12,16 @@ import dev.eshevchenko.dto.response.PageResponse;
 
 public interface ClientService {
   CreateClientResponse addClient(CreateClientRequest request);
+
   ClientResponse getClient(String clientId);
+
   PageResponse<ClientShortResponse> searchClients(SearchClientRequest request);
+
   ClientResponse updateClient(String clientId, UpdateClientRequest request);
+
   ClientResponse patchClient(String clientId, PatchClientRequest request);
+
   void blockClient(String clientId, BlockClientRequest request);
+
   void unblockClient(String clientId);
 }

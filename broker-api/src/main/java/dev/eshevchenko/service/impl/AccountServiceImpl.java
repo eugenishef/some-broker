@@ -9,11 +9,11 @@ import dev.eshevchenko.enums.AccountStatus;
 import dev.eshevchenko.mapper.AccountMapper;
 import dev.eshevchenko.entity.Account;
 import dev.eshevchenko.service.AccountService;
+import dev.eshevchenko.utils.AccountUtils;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +25,7 @@ public class AccountServiceImpl implements AccountService {
   private final AccountRepository accountRepository;
   private final ClientRepository clientRepository;
   private final AccountMapper accountMapper;
+  private final AccountUtils accountUtils;
 
   @Override
   @Transactional
@@ -42,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     Account entity = accountMapper.toEntity(request, clientId);
-    entity.setAccountNumber(generateAccountNumber());
+    entity.setAccountNumber(accountUtils.generateAccountNumber());
 
     Account saved = accountRepository.save(entity);
     return accountMapper.toCreateResponse(saved);
@@ -62,7 +63,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   @Transactional
   public void closeAccount(String accountId) {
-    Account entity = getOrThrow(accountId);
+    Account entity = accountUtils.getOrThrow(accountId);
     entity.setStatus(AccountStatus.CLOSED);
     entity.setClosedAt(Instant.now());
     accountRepository.save(entity);
@@ -71,24 +72,8 @@ public class AccountServiceImpl implements AccountService {
   @Override
   @Transactional
   public void freezeAccount(String accountId) {
-    Account entity = getOrThrow(accountId);
+    Account entity = accountUtils.getOrThrow(accountId);
     entity.setStatus(AccountStatus.FROZEN);
     accountRepository.save(entity);
-  }
-
-  private Account getOrThrow(String accountId) {
-    UUID id;
-    try {
-      id = UUID.fromString(accountId);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Некорректный UUID клиента: " + accountId);
-    }
-
-    return accountRepository.findById(id)
-      .orElseThrow(() -> new EntityNotFoundException("Счет не найден: " + accountId));
-  }
-
-  private String generateAccountNumber() {
-    return "40817810" + String.format("%011d", ThreadLocalRandom.current().nextLong(0, 100_000_000_000L));
   }
 }

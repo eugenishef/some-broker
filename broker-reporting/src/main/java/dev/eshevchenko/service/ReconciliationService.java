@@ -8,15 +8,9 @@ import java.util.UUID;
 
 public interface ReconciliationService {
 
-  default StartReconciliationResponse startReconciliation(StartReconciliationRequest request) {
-    throw new UnsupportedOperationException();
-  }
+  StartReconciliationResponse startReconciliation(StartReconciliationRequest request);
 
-  default ReconciliationStatusResponse getStatus(UUID id) {
-    throw new UnsupportedOperationException();
-  }
+  ReconciliationStatusResponse getStatus(UUID id);
 
-  default ReconciliationResultResponse getResult(UUID id) {
-    throw new UnsupportedOperationException();
-  }
+  ReconciliationResultResponse getResult(UUID id);
 }

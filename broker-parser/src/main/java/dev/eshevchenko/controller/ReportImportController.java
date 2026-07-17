@@ -1,7 +1,14 @@
 package dev.eshevchenko.controller;
 
+import static dev.eshevchenko.doc.constants.ReportApiConstants.IMPORT_REPORT_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReportApiConstants.IMPORT_REPORT_SUMMARY;
+import static dev.eshevchenko.doc.constants.ReportApiConstants.TAG_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReportApiConstants.TAG_NAME;
+
 import dev.eshevchenko.dto.CreateReportResponse;
 import dev.eshevchenko.service.ReportImportService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,15 +20,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+@Tag(name = TAG_NAME, description = TAG_DESCRIPTION)
 @Slf4j
 @RestController
-@RequestMapping("/reports/import")
+@RequestMapping("/api/v1/reports/import")
 @RequiredArgsConstructor
 public class ReportImportController {
 
   private final ReportImportService reportImportService;
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = IMPORT_REPORT_SUMMARY, description = IMPORT_REPORT_DESCRIPTION)
   public ResponseEntity<CreateReportResponse> importReport(@RequestParam MultipartFile file) {
     return ResponseEntity.status(HttpStatus.CREATED).body(reportImportService.importReport(file));
   }

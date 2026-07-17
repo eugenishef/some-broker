@@ -3,28 +3,25 @@ package dev.eshevchenko.parser.xlsx;
 import dev.eshevchenko.dto.ReportImportData;
 import dev.eshevchenko.dto.ReportOperationDto;
 import dev.eshevchenko.exception.ReportImportException;
+import dev.eshevchenko.utils.ExcelCellReaderUtils;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
+import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-@Component
+@Service
+@RequiredArgsConstructor
 public class XlsxReportParser implements ReportExcelParser {
 
-  private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-  private final DataFormatter formatter = new DataFormatter();
+  private final ExcelCellReaderUtils excelCellReaderUtils;
 
   @Override
   public ReportImportData parse(MultipartFile file) {
@@ -43,13 +40,13 @@ public class XlsxReportParser implements ReportExcelParser {
         throw new ReportImportException("Лист 'Report' не содержит данных");
       }
 
-      UUID clientId = readUuid(metaRow.getCell(0));
-      String clientName = readString(metaRow.getCell(1));
-      String inn = readString(metaRow.getCell(2));
-      String reportType = readString(metaRow.getCell(3));
-      LocalDate periodFrom = readDate(metaRow.getCell(4));
-      LocalDate periodTo = readDate(metaRow.getCell(5));
-      String currency = readString(metaRow.getCell(6));
+      UUID clientId = excelCellReaderUtils.readUuid(metaRow.getCell(0));
+      String clientName = excelCellReaderUtils.readString(metaRow.getCell(1));
+      String inn = excelCellReaderUtils.readString(metaRow.getCell(2));
+      String reportType = excelCellReaderUtils.readString(metaRow.getCell(3));
+      LocalDate periodFrom = excelCellReaderUtils.readDate(metaRow.getCell(4));
+      LocalDate periodTo = excelCellReaderUtils.readDate(metaRow.getCell(5));
+      String currency = excelCellReaderUtils.readString(metaRow.getCell(6));
 
       Sheet operationsSheet = workbook.getSheet("Operations");
 
@@ -61,16 +58,16 @@ public class XlsxReportParser implements ReportExcelParser {
 
       for (Row row : operationsSheet) {
         if (row.getRowNum() == 0) {continue;}
-        if (isEmpty(row)) {continue;}
+        if (excelCellReaderUtils.isEmpty(row)) {continue;}
 
         operations.add(
           new ReportOperationDto(
-            readUuid(row.getCell(0)),
-            readDate(row.getCell(1)),
-            readBigDecimal(row.getCell(2)),
-            readString(row.getCell(3)),
-            readString(row.getCell(4)),
-            readString(row.getCell(5))
+            excelCellReaderUtils.readUuid(row.getCell(0)),
+            excelCellReaderUtils.readDate(row.getCell(1)),
+            excelCellReaderUtils.readBigDecimal(row.getCell(2)),
+            excelCellReaderUtils.readString(row.getCell(3)),
+            excelCellReaderUtils.readString(row.getCell(4)),
+            excelCellReaderUtils.readString(row.getCell(5))
           )
         );
       }
@@ -91,36 +88,5 @@ public class XlsxReportParser implements ReportExcelParser {
     } catch (Exception e) {
       throw new ReportImportException("Ошибка чтения XLSX", e);
     }
-  }
-
-  private UUID readUuid(Cell cell) {
-    return UUID.fromString(readString(cell));
-  }
-
-  private String readString(Cell cell) {
-    return formatter.formatCellValue(cell).trim();
-  }
-
-  private BigDecimal readBigDecimal(Cell cell) {
-
-    String value = formatter.formatCellValue(cell)
-      .replace(" ", "")
-      .replace(",", ".");
-
-    return new BigDecimal(value);
-  }
-
-  private LocalDate readDate(Cell cell) {
-
-    if (cell.getCellType() == CellType.NUMERIC) {
-      return cell.getLocalDateTimeCellValue().toLocalDate();
-    }
-
-    return LocalDate.parse(formatter.formatCellValue(cell), DATE_FORMAT);
-  }
-
-  private boolean isEmpty(Row row) {
-    Cell cell = row.getCell(0);
-    return cell == null || formatter.formatCellValue(cell).isBlank();
   }
 }

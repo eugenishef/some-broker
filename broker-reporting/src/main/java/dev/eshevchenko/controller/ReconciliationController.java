@@ -1,11 +1,21 @@
 package dev.eshevchenko.controller;
 
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.GET_RECONCILIATION_RESULT_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.GET_RECONCILIATION_RESULT_SUMMARY;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.GET_RECONCILIATION_STATUS_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.GET_RECONCILIATION_STATUS_SUMMARY;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.START_RECONCILIATION_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.START_RECONCILIATION_SUMMARY;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.TAG_DESCRIPTION;
+import static dev.eshevchenko.doc.constants.ReconciliationConstants.TAG_NAME;
+
 import dev.eshevchenko.dto.request.StartReconciliationRequest;
 import dev.eshevchenko.dto.response.ReconciliationResultResponse;
 import dev.eshevchenko.dto.response.ReconciliationStatusResponse;
 import dev.eshevchenko.dto.response.StartReconciliationResponse;
 import dev.eshevchenko.service.ReconciliationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,16 +29,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = TAG_NAME, description = TAG_DESCRIPTION)
 @Slf4j
 @RestController
-@RequestMapping("/reconciliation")
+@RequestMapping("/api/v1/reconciliation")
 @RequiredArgsConstructor
 public class ReconciliationController {
 
   private final ReconciliationService reconciliationService;
 
   @PostMapping
-  @Operation(summary = "Запустить сверку")
+  @Operation(summary = START_RECONCILIATION_SUMMARY, description = START_RECONCILIATION_DESCRIPTION)
   public ResponseEntity<StartReconciliationResponse> startReconciliation(
     @Valid @RequestBody StartReconciliationRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED)
@@ -36,13 +47,13 @@ public class ReconciliationController {
   }
 
   @GetMapping("/{id}")
-  @Operation(summary = "Получить статус сверки")
+  @Operation(summary = GET_RECONCILIATION_STATUS_SUMMARY, description = GET_RECONCILIATION_STATUS_DESCRIPTION)
   public ResponseEntity<ReconciliationStatusResponse> getStatus(@PathVariable UUID id) {
     return ResponseEntity.ok(reconciliationService.getStatus(id));
   }
 
   @GetMapping("/{id}/result")
-  @Operation(summary = "Получить различия сверки")
+  @Operation(summary = GET_RECONCILIATION_RESULT_SUMMARY, description = GET_RECONCILIATION_RESULT_DESCRIPTION)
   public ResponseEntity<ReconciliationResultResponse> getResult(@PathVariable UUID id) {
     return ResponseEntity.ok(reconciliationService.getResult(id));
   }

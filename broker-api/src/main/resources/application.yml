@@ -3,10 +3,13 @@ spring:
     name: broker-clients-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/broker
-    username: broker
-    password: broker
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${POSTGRES_DB:broker}
+    username: ${DB_USERNAME:broker}
+    password: ${DB_PASSWORD:broker}
     driver-class-name: org.postgresql.Driver
+
+  profiles:
+    active: dev
 
   jpa:
     hibernate:
@@ -21,7 +24,25 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
 server:
-  port: 8080
+  port: ${APP_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0
+    zipkin:
+      tracing:
+        endpoint: http://localhost:9411/api/v2/spans
 
 logging:
   level:
