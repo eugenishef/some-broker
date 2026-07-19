@@ -6,11 +6,11 @@ import dev.eshevchenko.dto.request.CreateAccountRequest;
 import dev.eshevchenko.dto.response.AccountResponse;
 import dev.eshevchenko.dto.response.CreateAccountResponse;
 import dev.eshevchenko.enums.AccountStatus;
+import dev.eshevchenko.exceptions.EntityNotFoundException;
 import dev.eshevchenko.mapper.AccountMapper;
 import dev.eshevchenko.entity.Account;
 import dev.eshevchenko.service.AccountService;
 import dev.eshevchenko.utils.AccountUtils;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     if (!clientRepository.existsById(clientId)) {
-      throw new EntityNotFoundException("Клиент не найден: " + clientId);
+      throw new EntityNotFoundException("Клиент с id=" + clientId + " не найден");
     }
 
     Account entity = accountMapper.toEntity(request, clientId);
@@ -50,6 +50,7 @@ public class AccountServiceImpl implements AccountService {
   }
 
   @Override
+  @Transactional(readOnly = true)
   public List<AccountResponse> getClientAccounts(String clientId) {
     UUID id;
     try {

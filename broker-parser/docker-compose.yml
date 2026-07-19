@@ -1,0 +1,24 @@
+services:
+  broker-parser:
+    build:
+      context: .
+      dockerfile: broker-parser/Dockerfile
+    container_name: broker-parser
+    ports:
+      - "8081:8081"
+    environment:
+      APP_PORT: 8081
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_DB: broker
+      DB_USERNAME: broker
+      DB_PASSWORD: broker
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - broker-network

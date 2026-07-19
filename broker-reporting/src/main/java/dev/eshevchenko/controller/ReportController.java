@@ -77,11 +77,22 @@ public class ReportController {
     return ResponseEntity.ok(reportService.getVersions(id));
   }
 
-  @GetMapping("/{id}/versions/{version}")
-  @Operation(summary = GET_REPORT_VERSION_SUMMARY, description = GET_REPORT_VERSION_DESCRIPTION)
-  public ResponseEntity<ReportVersionResponse> getVersion(
+//  @GetMapping("/{id}/versions/{version}")
+//  @Operation(summary = GET_REPORT_VERSION_SUMMARY, description = GET_REPORT_VERSION_DESCRIPTION)
+//  public ResponseEntity<ReportVersionResponse> getVersion(
+//    @PathVariable UUID id, @PathVariable int version) {
+//    return ResponseEntity.ok(reportService.getVersion(id, version));
+//  }
+
+  @GetMapping(value = "/{id}/versions/{version}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+  @Operation(summary = "GET_REPORT_VERSION_PDF_SUMMARY", description = "GET_REPORT_VERSION_PDF_DESCRIPTION")
+  public ResponseEntity<byte[]> getVersionPdf(
     @PathVariable UUID id, @PathVariable int version) {
-    return ResponseEntity.ok(reportService.getVersion(id, version));
+    byte[] pdf = reportService.getVersion(id, version);
+    return ResponseEntity.ok()
+      .header(HttpHeaders.CONTENT_DISPOSITION,
+        "attachment; filename=\"report-" + id + "-v" + version + ".pdf\"")
+      .body(pdf);
   }
 
   @GetMapping(value = "/{id}/pdf", produces = MediaType.APPLICATION_PDF_VALUE)

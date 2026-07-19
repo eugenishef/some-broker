@@ -13,6 +13,7 @@ import dev.eshevchenko.entity.Report;
 import dev.eshevchenko.entity.ReportVersionEntity;
 import dev.eshevchenko.enums.Status;
 import dev.eshevchenko.exception.ReportNotFoundException;
+import dev.eshevchenko.exception.ReportNotReadyException;
 import dev.eshevchenko.exception.ReportVersionConflictException;
 import dev.eshevchenko.exception.ReportVersionNotFoundException;
 import dev.eshevchenko.kafka.ReportGenerationRequestedEvent;
@@ -143,20 +144,41 @@ public class ReportServiceImpl implements ReportService {
     }
   }
 
+//  @Override
+//  public ReportVersionResponse getVersion(UUID id, int versionNumber) {
+//    MDC.put("reportId", id.toString());
+//    MDC.put("version", String.valueOf(versionNumber));
+//    MDC.put("operation", "getVersion");
+//    try {
+//      log.info("Запрос конкретной версии отчета");
+//      return reportVersionRepository.findByReportIdAndVersionNumber(id, versionNumber)
+//        .map(reportMapper::toVersionResponse)
+//        .orElseThrow(() -> {
+//          log.warn("Версия отчета не найдена");
+//          return new ReportVersionNotFoundException(
+//            "Версия %d отчета с id=%s не найдена".formatted(versionNumber, id));
+//        });
+//    } finally {
+//      MDC.remove("reportId");
+//      MDC.remove("version");
+//      MDC.remove("operation");
+//    }
+//  }
+
   @Override
-  public ReportVersionResponse getVersion(UUID id, int versionNumber) {
+  public byte[] getVersion(UUID id, int versionNumber) {
     MDC.put("reportId", id.toString());
     MDC.put("version", String.valueOf(versionNumber));
-    MDC.put("operation", "getVersion");
+    MDC.put("operation", "getVersionPdf");
     try {
-      log.info("Запрос конкретной версии отчета");
+      log.info("Запрос PDF конкретной версии отчета");
+      if (!reportRepository.existsById(id)) {
+        throw new ReportNotFoundException("Отчет с id=" + id + " не найден");
+      }
       return reportVersionRepository.findByReportIdAndVersionNumber(id, versionNumber)
-        .map(reportMapper::toVersionResponse)
-        .orElseThrow(() -> {
-          log.warn("Версия отчета не найдена");
-          return new ReportVersionNotFoundException(
-            "Версия %d отчета с id=%s не найдена".formatted(versionNumber, id));
-        });
+        .map(ReportVersionEntity::getContent)
+        .orElseThrow(() -> new ReportVersionNotFoundException(
+          "Версия %d отчета с id=%s не найдена".formatted(versionNumber, id)));
     } finally {
       MDC.remove("reportId");
       MDC.remove("version");
@@ -169,9 +191,16 @@ public class ReportServiceImpl implements ReportService {
     MDC.put("reportId", id.toString());
     MDC.put("operation", "getPdf");
     try {
-      log.info("Запрос PDF отчета");
+      log.info("Запрос PDF последней версии отчета");
       Report report = reportServiceUtils.findReportOrThrow(id);
-      return report.getContent();
+      if (report.getStatus() != Status.READY) {
+        throw new ReportNotReadyException(
+          "PDF отчета с id=%s ещё не готов, статус=%s".formatted(id, report.getStatus()));
+      }
+      return reportVersionRepository.findTopByReportIdOrderByVersionNumberDesc(id)
+        .map(ReportVersionEntity::getContent)
+        .orElseThrow(() -> new ReportVersionNotFoundException(
+          "Для отчета с id=" + id + " нет ни одной версии"));
     } finally {
       MDC.remove("reportId");
       MDC.remove("operation");
@@ -202,7 +231,7 @@ public class ReportServiceImpl implements ReportService {
       ReportVersionEntity versionEntity = new ReportVersionEntity();
       versionEntity.setReportId(reportId);
       versionEntity.setVersionNumber(nextVersionNumber);
-      versionEntity.setContent(report.getContent());
+//      versionEntity.setContent(report.getContent());
       reportVersionRepository.save(versionEntity);
 
       Report saved = reportRepository.save(report);

@@ -1,22 +1,19 @@
 services:
-  broker-reporting:
+  broker-api:
     build:
       context: .
-      dockerfile: broker-reporting/Dockerfile
-    container_name: broker-reporting
+      dockerfile: broker-api/Dockerfile
+    container_name: broker-api
     depends_on:
       postgres:
         condition: service_healthy
-      kafka:
-        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/broker_dev
       SPRING_DATASOURCE_USERNAME: broker
       SPRING_DATASOURCE_PASSWORD: broker
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-#      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+    #      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
     ports:
-      - "8081:8081"
+      - "8080:8080"
     networks:
       - broker-network

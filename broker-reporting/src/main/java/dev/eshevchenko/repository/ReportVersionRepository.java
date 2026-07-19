@@ -15,4 +15,6 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersionEnti
   Optional<ReportVersionEntity> findByReportIdAndVersionNumber(UUID reportId, int versionNumber);
 
   int countByReportId(UUID reportId);
+
+  Optional<ReportVersionEntity> findTopByReportIdOrderByVersionNumberDesc(UUID reportId);
 }

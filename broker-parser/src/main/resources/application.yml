@@ -21,6 +21,9 @@ server:
   port: ${APP_PORT:8081}
 
 app:
+  api:
+    version: v1
+    base-path: /api/${app.api.version}
   report:
     import:
       batch-size: 1

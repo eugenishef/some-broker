@@ -7,13 +7,13 @@ COPY broker-api/pom.xml broker-api/pom.xml
 COPY broker-reporting/pom.xml broker-reporting/pom.xml
 
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -pl broker-reporting -am dependency:go-offline
+    mvn -B -pl broker-api -am dependency:go-offline
 
 COPY broker-api broker-api
 COPY broker-reporting broker-reporting
 
 RUN --mount=type=cache,target=/root/.m2 \
-    mvn -B -pl broker-reporting -am package -DskipTests
+    mvn -B -pl broker-api -am package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 
@@ -22,9 +22,9 @@ USER spring:spring
 
 WORKDIR /app
 
-COPY --from=build /workspace/broker-reporting/target/*.jar app.jar
+COPY --from=build /workspace/broker-api/target/*.jar app.jar
 
-EXPOSE 8081
+EXPOSE 8080
 
 ENTRYPOINT ["java", \
   "-XX:+UseContainerSupport", \

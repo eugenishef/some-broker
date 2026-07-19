@@ -2,8 +2,8 @@ package dev.eshevchenko.utils;
 
 import dev.eshevchenko.dao.ClientRepository;
 import dev.eshevchenko.entity.Client;
+import dev.eshevchenko.exceptions.EntityNotFoundException;
 import dev.eshevchenko.exceptions.InvalidClientIdException;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class ClientUtils {
   public Client getOrThrow(String clientId) {
     UUID id = parseClientId(clientId);
     return repository.findById(id)
-      .orElseThrow(() -> new EntityNotFoundException("Клиент не найден: " + clientId));
+      .orElseThrow(() -> new EntityNotFoundException("Клиент с id=" + clientId + " не найден"));
   }
 
   /**

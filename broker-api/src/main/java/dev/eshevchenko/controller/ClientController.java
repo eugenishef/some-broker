@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = TAG_NAME, description = TAG_DESCRIPTION)
 @Validated
 @RestController
-@RequestMapping("/api/v1/clients")
+@RequestMapping("${app.api.base-path}/clients")
 @RequiredArgsConstructor
 public class ClientController {
   private final ClientService clientService;
@@ -81,20 +81,28 @@ public class ClientController {
   @PostMapping("/search")
   @Operation(summary = SEARCH_CLIENTS_SUMMARY, description = SEARCH_CLIENTS_DESCRIPTION)
   public ResponseEntity<PageResponse<ClientShortResponse>> searchClients(
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(examples = @ExampleObject(value = ClientExamples.SEARCH_CLIENT_REQUEST)))
     @Valid @RequestBody SearchClientRequest request) {
     return ResponseEntity.ok(clientService.searchClients(request));
   }
 
   @PutMapping("/{clientId}")
   @Operation(summary = UPDATE_CLIENT_SUMMARY, description = UPDATE_CLIENT_DESCRIPTION)
-  public ResponseEntity<ClientResponse> updateClient(@PathVariable String clientId,
+  public ResponseEntity<ClientResponse> updateClient(
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(examples = @ExampleObject(value = ClientExamples.UPDATE_CLIENT_REQUEST)))
+    @PathVariable String clientId,
     @Valid @RequestBody UpdateClientRequest request) {
     return ResponseEntity.ok(clientService.updateClient(clientId, request));
   }
 
   @PatchMapping("/{clientId}")
   @Operation(summary = PATCH_CLIENT_SUMMARY, description = PATCH_CLIENT_DESCRIPTION)
-  public ResponseEntity<ClientResponse> patchClient(@PathVariable String clientId,
+  public ResponseEntity<ClientResponse> patchClient(
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(examples = @ExampleObject(value = ClientExamples.PATCH_CLIENT_REQUEST)))
+    @PathVariable String clientId,
     @RequestBody PatchClientRequest request) {
     return ResponseEntity.ok(clientService.patchClient(clientId, request));
   }
@@ -102,6 +110,8 @@ public class ClientController {
   @PostMapping("/{clientId}/block")
   @Operation(summary = BLOCK_CLIENT_SUMMARY, description = BLOCK_CLIENT_DESCRIPTION)
   public ResponseEntity<Void> blockClient(
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+      content = @Content(examples = @ExampleObject(value = ClientExamples.BLOCK_CLIENT_REQUEST)))
     @PathVariable String clientId,
     @Valid @RequestBody BlockClientRequest request) {
     clientService.blockClient(clientId, request);

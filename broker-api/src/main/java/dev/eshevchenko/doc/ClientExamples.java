@@ -13,7 +13,7 @@ public final class ClientExamples {
         "email": "petrov@example.com",
         "phone": "+79991234567",
         "inn": "770123456789",
-        "passportDto": {
+        "passport": {
           "series": "4510",
           "number": "123456"
         }

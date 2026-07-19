@@ -25,7 +25,9 @@ public interface ReportService {
 
   List<ReportVersionResponse> getVersions(UUID reportId);
 
-  ReportVersionResponse getVersion(UUID reportId, int versionNumber);
+//  ReportVersionResponse getVersion(UUID reportId, int versionNumber);
+
+  byte[] getVersion(UUID id, int versionNumber);
 
   byte[] getPdf(UUID reportId);
 

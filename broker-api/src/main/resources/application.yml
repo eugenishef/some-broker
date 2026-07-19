@@ -24,7 +24,22 @@ spring:
     change-log: classpath:db/changelog/db.changelog-master.xml
 
 server:
+  ssl:
+    enabled: false
   port: ${APP_PORT:8080}
+
+app:
+  api:
+    version: v1
+    base-path: /api/${app.api.version}
+  cache:
+    clients:
+      expire-after-write: 5m
+      maximum-size: 10000
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 
 management:
   endpoints:
@@ -45,6 +60,10 @@ management:
         endpoint: http://localhost:9411/api/v2/spans
 
 logging:
+  logstash:
+    host: ${LOGSTASH_HOST:localhost}
+    port: ${LOGSTASH_PORT:5001}
+    keep-alive: ${LOGSTASH_KEEP_ALIVE:30 seconds}
   level:
     org.springframework.security: INFO
     liquibase: INFO

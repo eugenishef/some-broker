@@ -1,8 +1,9 @@
 package dev.eshevchenko.dto.response;
 
 import dev.eshevchenko.enums.Status;
+import java.util.UUID;
 
 public record CreateClientResponse(
-  String clientId,
+  UUID clientId,
   Status status
 ){}

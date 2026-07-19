@@ -14,14 +14,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  @ExceptionHandler(ClientAlreadyExistsException.class)
-  public ResponseEntity<ApiErrorResponse> handleClientAlreadyExists(ClientAlreadyExistsException ex) {
-    return ResponseEntity.status(HttpStatus.CONFLICT)
-      .body(new ApiErrorResponse(
-        HttpStatus.CONFLICT.value(),
-        ex.getMessage(),
-        List.of()
-      ));
+  @ExceptionHandler(ApiException.class)
+  public ResponseEntity<ApiErrorResponse> handleApiException(ApiException ex) {
+    log.warn("Бизнес-ошибка [{}]: {}", ex.getStatus(), ex.getMessage());
+    return ResponseEntity.status(ex.getStatus())
+      .body(new ApiErrorResponse(ex.getStatus().value(), ex.getMessage(), List.of()));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -40,6 +37,16 @@ public class GlobalExceptionHandler {
       ));
   }
 
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  public ResponseEntity<ApiErrorResponse> handleNotReadable(HttpMessageNotReadableException ex) {
+    log.warn("Некорректное тело запроса: {}", ex.getMessage());
+    return ResponseEntity.badRequest()
+      .body(new ApiErrorResponse(
+        HttpStatus.BAD_REQUEST.value(),
+        "Некорректный формат запроса. Проверьте типы и форматы полей",
+        List.of()));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiErrorResponse> handleAnyException(Exception ex) {
     log.error("Непредвиденная ошибка", ex);
@@ -50,21 +57,5 @@ public class GlobalExceptionHandler {
         "Внутренняя ошибка сервера",
         List.of()
       ));
-  }
-
-  @ExceptionHandler(InvalidClientIdException.class)
-  public ResponseEntity<ApiErrorResponse> handleInvalidClientId(InvalidClientIdException ex) {
-    return ResponseEntity.badRequest()
-      .body(new ApiErrorResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), List.of()));
-  }
-
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  public ResponseEntity<ApiErrorResponse> handleNotReadable(HttpMessageNotReadableException ex) {
-    log.warn("Некорректное тело запроса: {}", ex.getMessage());
-    return ResponseEntity.badRequest()
-      .body(new ApiErrorResponse(
-        HttpStatus.BAD_REQUEST.value(),
-        "Некорректный формат запроса. Проверьте типы и форматы полей (например, дата — в формате YYYY-MM-DD)",
-        List.of()));
   }
 }

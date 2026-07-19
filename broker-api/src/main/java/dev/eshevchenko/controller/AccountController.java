@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = TAG_NAME, description = TAG_DESCRIPTION)
 @RestController
-@RequestMapping("/api/v1/accounts")
+@RequestMapping("${app.api.base-path}/accounts")
 @RequiredArgsConstructor
 public class AccountController {
   private final AccountService accountService;
