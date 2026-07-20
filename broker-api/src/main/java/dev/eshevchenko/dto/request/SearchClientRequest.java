@@ -1,18 +1,21 @@
 package dev.eshevchenko.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import dev.eshevchenko.enums.ClientStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Sort;
 
 @Getter
-@Setter
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SearchClientRequest {
 
@@ -23,6 +26,8 @@ public class SearchClientRequest {
   @Max(100)
   int size = 20;
 
+  @Builder.Default
+  @JsonSetter(nulls = Nulls.AS_EMPTY)
   List<SortField> sort = new ArrayList<>();
 
   ClientFilter filter;

@@ -30,13 +30,7 @@ public class AccountServiceImpl implements AccountService {
   @Override
   @Transactional
   public CreateAccountResponse createAccount(CreateAccountRequest request) {
-    UUID clientId;
-
-    try {
-      clientId = UUID.fromString(request.clientId());
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Некорректный UUID клиента: " + request.clientId());
-    }
+    UUID clientId = request.clientId();
 
     if (!clientRepository.existsById(clientId)) {
       throw new EntityNotFoundException("Клиент с id=" + clientId + " не найден");
@@ -51,19 +45,13 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   @Transactional(readOnly = true)
-  public List<AccountResponse> getClientAccounts(String clientId) {
-    UUID id;
-    try {
-      id = UUID.fromString(clientId);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Некорректный UUID клиента: " + clientId);
-    }
-    return accountMapper.toResponse(accountRepository.findAllByClientId(id));
+  public List<AccountResponse> getClientAccounts(UUID clientId) {
+    return accountMapper.toResponse(accountRepository.findAllByClientId(clientId));
   }
 
   @Override
   @Transactional
-  public void closeAccount(String accountId) {
+  public void closeAccount(UUID accountId) {
     Account entity = accountUtils.getOrThrow(accountId);
     entity.setStatus(AccountStatus.CLOSED);
     entity.setClosedAt(Instant.now());
@@ -72,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   @Transactional
-  public void freezeAccount(String accountId) {
+  public void freezeAccount(UUID accountId) {
     Account entity = accountUtils.getOrThrow(accountId);
     entity.setStatus(AccountStatus.FROZEN);
     accountRepository.save(entity);

@@ -9,19 +9,20 @@ import dev.eshevchenko.dto.response.ClientResponse;
 import dev.eshevchenko.dto.response.ClientShortResponse;
 import dev.eshevchenko.dto.response.CreateClientResponse;
 import dev.eshevchenko.dto.response.PageResponse;
+import java.util.UUID;
 
 public interface ClientService {
   CreateClientResponse addClient(CreateClientRequest request);
 
-  ClientResponse getClient(String clientId);
+  ClientResponse getClient(UUID clientId);
 
   PageResponse<ClientShortResponse> searchClients(SearchClientRequest request);
 
-  ClientResponse updateClient(String clientId, UpdateClientRequest request);
+  ClientResponse updateClient(UUID clientId, UpdateClientRequest request);
 
-  ClientResponse patchClient(String clientId, PatchClientRequest request);
+  ClientResponse patchClient(UUID clientId, PatchClientRequest request);
 
-  void blockClient(String clientId, BlockClientRequest request);
+  void blockClient(UUID clientId, BlockClientRequest request);
 
-  void unblockClient(String clientId);
+  void unblockClient(UUID clientId);
 }

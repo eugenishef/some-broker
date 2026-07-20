@@ -5,14 +5,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.time.Instant;
 import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -20,30 +20,18 @@ import org.hibernate.type.SqlTypes;
 @Table(schema = "reporting", name = "report_versions")
 @Getter
 @Setter
-public class ReportVersionEntity {
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ReportVersionEntity extends BaseEntity {
 
-  @Id
-  private UUID id;
-
-  private UUID reportId;
-  private int versionNumber;
+  UUID reportId;
+  int versionNumber;
 
   @Enumerated(EnumType.STRING)
-  private ReportStatus status;
+  ReportStatus status;
 
   @JdbcTypeCode(SqlTypes.VARBINARY)
   @Column(name = "content")
-  private byte[] content;
-
-  private Instant createdAt;
-
-  @PrePersist
-  protected void prePersist() {
-    if (id == null) {
-      id = UUID.randomUUID();
-    }
-    if (createdAt == null) {
-      createdAt = Instant.now();
-    }
-  }
+  byte[] content;
 }

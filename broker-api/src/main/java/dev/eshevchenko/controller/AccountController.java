@@ -15,6 +15,7 @@ import dev.eshevchenko.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,14 +42,14 @@ public class AccountController {
 
   @PostMapping("/{accountId}/close")
   @Operation(summary = CLOSE_ACCOUNT_SUMMARY, description = CLOSE_ACCOUNT_DESCRIPTION)
-  public ResponseEntity<Void> closeAccount(@PathVariable String accountId) {
+  public ResponseEntity<Void> closeAccount(@PathVariable UUID accountId) {
     accountService.closeAccount(accountId);
     return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{accountId}/freeze")
   @Operation(summary = FREEZE_ACCOUNT_SUMMARY, description = FREEZE_ACCOUNT_DESCRIPTION)
-  public ResponseEntity<Void> freezeAccount(@PathVariable String accountId) {
+  public ResponseEntity<Void> freezeAccount(@PathVariable UUID accountId) {
     accountService.freezeAccount(accountId);
     return ResponseEntity.noContent().build();
   }

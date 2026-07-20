@@ -22,15 +22,8 @@ public class AccountUtils {
    * @param accountId строковый идентификатор счета (UUID)
    * @return найденный счет {@link Account}
    */
-  public Account getOrThrow(String accountId) {
-    UUID id;
-    try {
-      id = UUID.fromString(accountId);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Некорректный UUID клиента: " + accountId);
-    }
-
-    return accountRepository.findById(id)
+  public Account getOrThrow(UUID accountId) {
+    return accountRepository.findById(accountId)
       .orElseThrow(() -> new EntityNotFoundException("Счет не найден: " + accountId));
   }
 

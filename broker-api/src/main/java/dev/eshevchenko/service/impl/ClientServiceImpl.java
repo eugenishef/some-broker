@@ -15,7 +15,6 @@ import dev.eshevchenko.dto.response.ClientResponse;
 import dev.eshevchenko.dto.response.ClientShortResponse;
 import dev.eshevchenko.dto.response.CreateClientResponse;
 import dev.eshevchenko.dto.response.PageResponse;
-import dev.eshevchenko.entity.Account;
 import dev.eshevchenko.enums.ClientStatus;
 import dev.eshevchenko.enums.Status;
 import dev.eshevchenko.exceptions.EntityConflictException;
@@ -25,6 +24,7 @@ import dev.eshevchenko.entity.Client;
 import dev.eshevchenko.service.ClientService;
 import dev.eshevchenko.utils.ClientUtils;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -65,22 +65,20 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional(readOnly = true)
   @Cacheable(value = "clients", key = "#clientId")
-  public ClientResponse getClient(String clientId) {
+  public ClientResponse getClient(UUID clientId) {
     Client entity = clientUtils.getOrThrow(clientId);
-    List<Account> findClients = accountRepository.findAllByClientId(entity.getId());
-
-    List<AccountResponse> accounts = accountMapper.toResponse(findClients);
-    return clientMapper.toResponse(entity, accounts);
+    return clientMapper.toResponse(entity, loadAccounts(entity.getId()));
   }
 
 
   @Override
   @Transactional(readOnly = true)
   public PageResponse<ClientShortResponse> searchClients(SearchClientRequest request) {
-    Sort sort = Sort.unsorted();
-    for (SearchClientRequest.SortField field : request.getSort()) {
-      sort = sort.and(Sort.by(field.getDirection(), field.getField()));
-    }
+
+    Sort sort = request.getSort().stream()
+      .map(field -> Sort.by(field.getDirection(), field.getField()))
+      .reduce(Sort.unsorted(), Sort::and);
+
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
     String email = request.getFilter() != null ? request.getFilter().getEmail() : null;
@@ -94,34 +92,30 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional
   @CacheEvict(value = "clients", key = "#clientId")
-  public ClientResponse updateClient(String clientId, UpdateClientRequest request) {
+  public ClientResponse updateClient(UUID clientId, UpdateClientRequest request) {
     Client entity = clientUtils.getOrThrow(clientId);
     clientMapper.update(entity, request);
 
     Client saved = repository.save(entity);
-    List<AccountResponse> accounts =
-      accountMapper.toResponse(accountRepository.findAllByClientId(saved.getId()));
-    return clientMapper.toResponse(saved, accounts);
+    return clientMapper.toResponse(saved, loadAccounts(saved.getId()));
   }
 
   @Override
   @Transactional
   @CacheEvict(value = "clients", key = "#clientId")
-  public ClientResponse patchClient(String clientId, PatchClientRequest request) {
+  public ClientResponse patchClient(UUID clientId, PatchClientRequest request) {
 
     Client entity = clientUtils.getOrThrow(clientId);
     clientMapper.patch(entity, request);
 
     Client saved = repository.save(entity);
-    List<Account> findClients = accountRepository.findAllByClientId(saved.getId());
-    List<AccountResponse> accounts = accountMapper.toResponse(findClients);
-    return clientMapper.toResponse(saved, accounts);
+    return clientMapper.toResponse(saved, loadAccounts(saved.getId()));
   }
 
   @Override
   @Transactional
   @CacheEvict(value = "clients", key = "#clientId")
-  public void blockClient(String clientId, BlockClientRequest request) {
+  public void blockClient(UUID clientId, BlockClientRequest request) {
     Client entity = clientUtils.getOrThrow(clientId);
     entity.setStatus(ClientStatus.BLOCKED);
     entity.setBlockReason(request.reason());
@@ -131,10 +125,14 @@ public class ClientServiceImpl implements ClientService {
   @Override
   @Transactional
   @CacheEvict(value = "clients", key = "#clientId")
-  public void unblockClient(String clientId) {
+  public void unblockClient(UUID clientId) {
     Client entity = clientUtils.getOrThrow(clientId);
     entity.setStatus(ClientStatus.ACTIVE);
     entity.setBlockReason(null);
     repository.save(entity);
+  }
+
+  private List<AccountResponse> loadAccounts(UUID clientId) {
+    return accountMapper.toResponse(accountRepository.findAllByClientId(clientId));
   }
 }

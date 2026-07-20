@@ -27,6 +27,15 @@ app:
   report:
     import:
       batch-size: 1
+  cache:
+    reports:
+      cache-name: reports
+      expire-after-write: 5m
+      maximum-size: 1000
+    report-versions:
+      cache-name: reportVersions
+      expire-after-write: 10m
+      maximum-size: 5000
 
 logging:
   level:

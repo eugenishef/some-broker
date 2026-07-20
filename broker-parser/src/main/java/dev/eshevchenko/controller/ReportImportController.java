@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = TAG_NAME, description = TAG_DESCRIPTION)
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/reports/import")
+@RequestMapping("${app.api.base-path}/reports/import")
 @RequiredArgsConstructor
 public class ReportImportController {
 

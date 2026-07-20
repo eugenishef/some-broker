@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+  <changeSet id="007-add-created-at-report-operations" author="eshevchenko">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <columnExists schemaName="reporting" tableName="report_operations" columnName="created_at"/>
+      </not>
+    </preConditions>
+
+    <addColumn schemaName="reporting" tableName="report_operations">
+      <column name="created_at" type="timestamptz" defaultValueComputed="CURRENT_TIMESTAMP">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="007-report-versions-created-at-to-timestamptz" author="eshevchenko">
+    <preConditions onFail="MARK_RAN">
+      <columnExists schemaName="reporting" tableName="report_versions" columnName="created_at"/>
+    </preConditions>
+    <sql>
+      ALTER TABLE reporting.report_versions
+      ALTER COLUMN created_at
+      TYPE timestamptz
+      USING created_at AT TIME ZONE 'UTC';
+    </sql>
+  </changeSet>
+</databaseChangeLog>

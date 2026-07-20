@@ -10,5 +10,7 @@
   <include file="db/changelog/changelogs/003-add-report-metadata-columns.xml"/>
   <include file="db/changelog/changelogs/004-add-default-version-reports.xml"/>
   <include file="db/changelog/changelogs/005-drop-not-null-version-reports.xml"/>
+  <include file="db/changelog/changelogs/006-reports-created-at-to-timestamptz.xml"/>
+  <include file="db/changelog/changelogs/007-add-created-at.xml"/>
 
 </databaseChangeLog>

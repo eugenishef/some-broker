@@ -6,17 +6,15 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
@@ -24,12 +22,10 @@ import lombok.experimental.FieldDefaults;
 @Table(schema = "api", name = "clients")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Client {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  UUID id;
+public class Client extends BaseEntity {
 
   String firstName;
   String lastName;
@@ -57,9 +53,6 @@ public class Client {
 
   @PrePersist
   void prePersist() {
-    if (id == null) {
-      id = UUID.randomUUID();
-    }
     createdAt = Instant.now();
     updatedAt = Instant.now();
     if (status == null) {

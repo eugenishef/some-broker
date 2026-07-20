@@ -24,24 +24,8 @@ public class ClientUtils {
    * @throws InvalidClientIdException если формат UUID некорректный
    * @throws EntityNotFoundException  если клиент не найден
    */
-  public Client getOrThrow(String clientId) {
-    UUID id = parseClientId(clientId);
-    return repository.findById(id)
+  public Client getOrThrow(UUID clientId) {
+    return repository.findById(clientId)
       .orElseThrow(() -> new EntityNotFoundException("Клиент с id=" + clientId + " не найден"));
-  }
-
-  /**
-   * Преобразует строковый идентификатор клиента в UUID.
-   * @param clientId строковый UUID клиента
-   * @return объект {@link UUID}
-   *
-   * @throws InvalidClientIdException если строка имеет некорректный формат UUID
-   */
-  public UUID parseClientId(String clientId) {
-    try {
-      return UUID.fromString(clientId);
-    } catch (IllegalArgumentException ex) {
-      throw new InvalidClientIdException("Некорректный формат идентификатора клиента: " + clientId);
-    }
   }
 }

@@ -34,7 +34,8 @@ app:
     base-path: /api/${app.api.version}
   cache:
     clients:
-      expire-after-write: 5m
+      cache-name: clients
+      expire-after-write: 5
       maximum-size: 10000
 
 springdoc:

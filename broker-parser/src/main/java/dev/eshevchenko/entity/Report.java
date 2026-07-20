@@ -5,80 +5,74 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import jakarta.persistence.PostLoad;
 import jakarta.persistence.PostPersist;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Persistable;
 
+@Builder
 @Entity
 @Table(schema = "reporting", name = "reports")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Report implements Persistable<UUID> {
-
-  @Id
-  private UUID id;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Report extends BaseEntity implements Persistable<UUID> {
 
   @Column(name = "client_id")
-  private UUID clientId;
+  UUID clientId;
 
   @Column(name = "client_name")
-  private String clientName;
+  String clientName;
 
-  private String inn;
+  String inn;
 
   @Column(nullable = false)
-  private String type;
+  String type;
 
   @Enumerated(EnumType.STRING)
-  private ReportStatus status;
+  ReportStatus status;
 
   @Column(name = "period_from")
-  private LocalDate periodFrom;
+  LocalDate periodFrom;
 
   @Column(name = "period_to")
-  private LocalDate periodTo;
+  LocalDate periodTo;
 
-  private String currency;
+  String currency;
 
   @Version
-  private Long version;
-
-  @Column(name = "created_at")
-  private LocalDateTime createdAt;
+  Long version;
 
   @Transient
   @Builder.Default
-  private boolean isNew = true;
+  boolean isNew = true;
 
-  @PrePersist
-  void prePersist(){
-    createdAt = LocalDateTime.now();
+  @Override
+  public UUID getId() {
+    return super.getId();
+  }
+
+  @Override
+  public boolean isNew() {
+    return isNew;
   }
 
   @PostLoad
   @PostPersist
   void markNotNew(){
     isNew = false;
-  }
-
-  @Override
-  public boolean isNew() {
-    return isNew;
   }
 }

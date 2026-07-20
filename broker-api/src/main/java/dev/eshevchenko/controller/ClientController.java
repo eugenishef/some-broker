@@ -30,7 +30,6 @@ import dev.eshevchenko.dto.response.ClientResponse;
 import dev.eshevchenko.dto.response.ClientShortResponse;
 import dev.eshevchenko.dto.response.CreateClientResponse;
 import dev.eshevchenko.dto.response.PageResponse;
-import dev.eshevchenko.i18n.swagger.annotations.ApiClientCreated;
 import dev.eshevchenko.service.AccountService;
 import dev.eshevchenko.service.ClientService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,6 +38,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +74,7 @@ public class ClientController {
 
   @GetMapping("/{clientId}")
   @Operation(summary = GET_CLIENT_SUMMARY, description = GET_CLIENT_DESCRIPTION)
-  public ResponseEntity<ClientResponse> getClient(@PathVariable String clientId) {
+  public ResponseEntity<ClientResponse> getClient(@PathVariable UUID clientId) {
     return ResponseEntity.ok(clientService.getClient(clientId));
   }
 
@@ -92,7 +92,7 @@ public class ClientController {
   public ResponseEntity<ClientResponse> updateClient(
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = @Content(examples = @ExampleObject(value = ClientExamples.UPDATE_CLIENT_REQUEST)))
-    @PathVariable String clientId,
+    @PathVariable UUID clientId,
     @Valid @RequestBody UpdateClientRequest request) {
     return ResponseEntity.ok(clientService.updateClient(clientId, request));
   }
@@ -102,7 +102,7 @@ public class ClientController {
   public ResponseEntity<ClientResponse> patchClient(
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = @Content(examples = @ExampleObject(value = ClientExamples.PATCH_CLIENT_REQUEST)))
-    @PathVariable String clientId,
+    @PathVariable UUID clientId,
     @RequestBody PatchClientRequest request) {
     return ResponseEntity.ok(clientService.patchClient(clientId, request));
   }
@@ -112,7 +112,7 @@ public class ClientController {
   public ResponseEntity<Void> blockClient(
     @io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = @Content(examples = @ExampleObject(value = ClientExamples.BLOCK_CLIENT_REQUEST)))
-    @PathVariable String clientId,
+    @PathVariable UUID clientId,
     @Valid @RequestBody BlockClientRequest request) {
     clientService.blockClient(clientId, request);
     return ResponseEntity.noContent().build();
@@ -120,7 +120,7 @@ public class ClientController {
 
   @PostMapping("/{clientId}/unblock")
   @Operation(summary = UNBLOCK_CLIENT_SUMMARY, description = UNBLOCK_CLIENT_DESCRIPTION)
-  public ResponseEntity<Void> unblockClient(@PathVariable String clientId) {
+  public ResponseEntity<Void> unblockClient(@PathVariable UUID clientId) {
     clientService.unblockClient(clientId);
     return ResponseEntity.noContent().build();
   }
@@ -128,7 +128,7 @@ public class ClientController {
   @GetMapping("/{clientId}/accounts")
   @Operation(summary = GET_CLIENT_ACCOUNTS_SUMMARY, description = GET_CLIENT_ACCOUNTS_DESCRIPTION)
   public ResponseEntity<List<AccountResponse>> getClientAccounts(
-    @PathVariable String clientId) {
+    @PathVariable UUID clientId) {
     return ResponseEntity.ok(accountService.getClientAccounts(clientId));
   }
 }

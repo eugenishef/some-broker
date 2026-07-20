@@ -1,21 +1,19 @@
 package dev.eshevchenko.entity;
 
-
 import dev.eshevchenko.enums.AccountStatus;
 import dev.eshevchenko.enums.AccountType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
@@ -23,12 +21,10 @@ import lombok.experimental.FieldDefaults;
 @Table(schema = "api", name = "broker_accounts")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
-  UUID id;
+public class Account extends BaseEntity {
 
   @Column(name = "client_id", nullable = false)
   UUID clientId;
@@ -49,9 +45,6 @@ public class Account {
 
   @PrePersist
   void prePersist() {
-    if (id == null) {
-      id = UUID.randomUUID();
-    }
     openedAt = Instant.now();
     if (status == null) {
       status = AccountStatus.OPEN;
