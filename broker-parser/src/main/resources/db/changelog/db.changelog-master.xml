@@ -12,5 +12,7 @@
   <include file="db/changelog/changelogs/005-drop-not-null-version-reports.xml"/>
   <include file="db/changelog/changelogs/006-reports-created-at-to-timestamptz.xml"/>
   <include file="db/changelog/changelogs/007-add-created-at.xml"/>
+  <include file="db/changelog/changelogs/008-add-unique-constraint-report-version.xml"/>
+  <include file="db/changelog/changelogs/009-add-is-actual-report-versions.xml"/>
 
 </databaseChangeLog>

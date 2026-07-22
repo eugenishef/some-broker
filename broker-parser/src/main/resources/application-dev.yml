@@ -42,7 +42,7 @@ spring:
         spring:
           json:
             trusted:
-              packages: "*"
+              packages: "dev.eshevchenko.dto.event"
 
   cache:
     type: caffeine
@@ -50,5 +50,6 @@ spring:
 logging:
   level:
     org.hibernate.SQL: INFO
-    org.springframework.kafka: INFO
+    org.apache.kafka: DEBUG
+    org.springframework.kafka: DEBUG
     dev.eshevchenko: DEBUG

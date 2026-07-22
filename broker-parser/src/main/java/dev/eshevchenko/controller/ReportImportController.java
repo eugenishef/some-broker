@@ -5,7 +5,7 @@ import static dev.eshevchenko.doc.constants.ReportApiConstants.IMPORT_REPORT_SUM
 import static dev.eshevchenko.doc.constants.ReportApiConstants.TAG_DESCRIPTION;
 import static dev.eshevchenko.doc.constants.ReportApiConstants.TAG_NAME;
 
-import dev.eshevchenko.dto.CreateReportResponse;
+import dev.eshevchenko.dto.event.CreateReportResponse;
 import dev.eshevchenko.service.ReportImportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

@@ -31,6 +31,9 @@ public class ReportVersionEntity extends BaseEntity {
   @Enumerated(EnumType.STRING)
   ReportStatus status;
 
+  @Column(name = "is_actual")
+  private boolean actual;
+
   @JdbcTypeCode(SqlTypes.VARBINARY)
   @Column(name = "content")
   byte[] content;
